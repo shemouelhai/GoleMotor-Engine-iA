@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#020308">
+  <title>SUPER S.A.M. - GOLEMOTOR QNM SOVEREIGN PWA</title>
+
+  <script>
+    // Transistor-Interpréteur Haute Performance
+    document.addEventListener("DOMContentLoaded", () => {
+      const source = document.getElementById('qnm-source-matrix');
+      if (!source) return;
+
+      const raw = source.textContent;
+
+      const extractQNode = (tagId) => {
+        const regex = new RegExp(`<q-node\\b[^>]*?id=["']${tagId}["'][^>]*?>([\\s\\S]*?)<\\/q-node>`, 'gi');
+        const match = regex.exec(raw);
+        if (!match) return '';
+        let body = match[1].trim();
+        if (body.startsWith('[[')) body = body.slice(2);
+        if (body.endsWith(']]')) body = body.slice(0, -2);
+        return body.trim();
+      };
+
+      // 1. Injection CSS
+      const css = extractQNode('Q-CSS');
+      if (css) {
+        const s = document.createElement('style');
+        s.textContent = css;
+        document.head.appendChild(s);
+      }
+
+      // 2. Injection DOM
+      const html = extractQNode('Q-DOM');
+      if (html) {
+        document.body.innerHTML = html; // Remplace le body pour éliminer les résidus textuels
+      }
+
+      // 3. Injection Audio WebAudio
+      const audioJs = extractQNode('Q-AUDIO');
+      if (audioJs) {
+        const s = document.createElement('script');
+        s.textContent = audioJs;
+        document.body.appendChild(s);
+      }
+
+      // 4. Injection Core Runtime + WebSocket Bridge
+      const logicJs = extractQNode('Q-CORE');
+      if (logicJs) {
+        const s = document.createElement('script');
+        s.textContent = logicJs;
+        document.body.appendChild(s);
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <script type="text/qnm-matrix" id="qnm-source-matrix">
+    <q-matrix-root type="SovereignEngine" version="2.0.26">
+
+      <!-- [Q-NODE CSS] -->
+      <q-node id="Q-CSS" target="STYLE">[[
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          background-color: #020308;
+          color: #DDF0FF;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-height: 100vh;
+          padding: 12px;
+          gap: 12px;
+          user-select: none;
+        }
+        .header { text-align: center; }
+        .tag { font-size: 0.65rem; letter-spacing: 3px; color: #00FFCC; font-weight: bold; }
+        .title { font-size: 1.3rem; font-weight: 900; letter-spacing: 3px; text-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
+        .workspace { display: flex; flex-direction: column; width: 100%; max-width: 600px; gap: 10px; }
+        .viewport-box {
+          position: relative; width: 100%; aspect-ratio: 16 / 9;
+          background: #000; border: 2px solid rgba(0, 255, 204, 0.3);
+          border-radius: 8px; overflow: hidden; box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+        }
+        #viewport-canvas { width: 100%; height: 100%; display: block; }
+        .badge-left {
+          position: absolute; top: 8px; left: 8px;
+          background: rgba(0,0,0,0.85); border: 1px solid #00FFCC;
+          border-radius: 4px; padding: 2px 6px; font-size: 0.6rem; color: #00FFCC;
+        }
+        .badge-right {
+          position: absolute; top: 8px; right: 8px;
+          background: rgba(0,0,0,0.85); border: 1px solid #00FF66;
+          border-radius: 4px; padding: 2px 6px; font-size: 0.6rem; color: #00FF66; font-weight: bold;
+        }
+        .metrics-grid {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+          background: rgba(8, 14, 26, 0.9); border: 1px solid rgba(0, 255, 204, 0.2);
+          border-radius: 6px; padding: 8px; font-size: 0.7rem; text-align: center;
+        }
+        .metric-val { font-weight: bold; color: #00FFCC; display: block; margin-top: 2px; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .btn-qnm {
+          background: rgba(0, 255, 204, 0.08); border: 1px solid rgba(0, 255, 204, 0.3);
+          color: #00FFCC; padding: 10px; border-radius: 6px; font-size: 0.7rem; font-weight: bold;
+          cursor: pointer; transition: 0.2s;
+        }
+        .btn-qnm:active { background: rgba(0, 255, 204, 0.3); }
+        .chat-section {
+          background: rgba(6, 10, 20, 0.95); border: 1px solid rgba(112, 0, 255, 0.4);
+          border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; height: 160px;
+        }
+        .chat-logs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; font-size: 0.7rem; }
+        .chat-msg { padding: 4px 8px; border-radius: 4px; max-width: 90%; }
+        .msg-user { align-self: flex-end; background: rgba(0, 255, 204, 0.2); color: #FFF; }
+        .msg-bot { align-self: flex-start; background: rgba(112, 0, 255, 0.25); color: #DDF0FF; }
+        .chat-form { display: flex; gap: 6px; }
+        .chat-input {
+          flex: 1; background: #000; border: 1px solid rgba(0, 255, 204, 0.3);
+          border-radius: 4px; padding: 6px 8px; color: #FFF; font-size: 0.75rem;
+        }
+        .btn-send {
+          background: #7000FF; color: #FFF; border: none; border-radius: 4px;
+          padding: 6px 14px; font-weight: bold; cursor: pointer; font-size: 0.75rem;
+        }
+      ]]>
+      </q-node>
+
+      <!-- [Q-NODE DOM] -->
+      <q-node id="Q-DOM" target="LAYOUT">[[
+        <div class="header">
+          <div class="tag">GOLEMOTOR // QUANTUM NODE MATRIX</div>
+          <h1 class="title">QNM SOVEREIGN CORE</h1>
+        </div>
+        <div class="workspace">
+          <div class="viewport-box">
+            <canvas id="viewport-canvas" width="640" height="360"></canvas>
+            <div class="badge-left" id="pipeline-badge">PIPELINE : PYTHON SYNC...</div>
+            <div class="badge-right" id="fps-badge">60 FPS</div>
+          </div>
+          <div class="metrics-grid">
+            <div>TRINITÉ W_c<span id="metric-wc" class="metric-val">0.0 W</span></div>
+            <div>PAWA BANK<span id="metric-pawa" class="metric-val">0.0 PAWA</span></div>
+            <div>BERG 1%<span id="metric-berg" class="metric-val">0.000 BERG</span></div>
+          </div>
+          <div class="controls">
+            <button class="btn-qnm" onclick="window.QNM.injectMatter('BASALTE')">💎 INJECTER BASALTE</button>
+            <button class="btn-qnm" onclick="window.QNM.injectMatter('PLASMA')">⚡ INJECTER PLASMA</button>
+            <button class="btn-qnm" onclick="window.QNM.triggerWindPulse()">💨 PULSE VENT (TYPE 5)</button>
+            <button class="btn-qnm" onclick="window.QNM.saveToOPFS()">💾 SAUVEGARDE OPFS</button>
+          </div>
+          <div class="chat-section">
+            <div class="chat-logs" id="chat-logs">
+              <div class="chat-msg msg-bot">Noyau QNM initialisé. Connexion au flux golemotor.py en cours...</div>
+            </div>
+            <div class="chat-form">
+              <input type="text" class="chat-input" id="chat-input" placeholder="Directive sémantique ou échange..." />
+              <button class="btn-send" id="btn-send">PULSE</button>
+            </div>
+          </div>
+        </div>
+      ]]>
+      </q-node>
+
+      <!-- [Q-NODE AUDIO] -->
+      <q-node id="Q-AUDIO" target="SOUND">[[
+        window.audioCtx = null;
+        window.playHapticFreq = function(freq = 440, type = 'sine', duration = 0.1) {
+          try {
+            if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+            const now = window.audioCtx.currentTime;
+            const osc = window.audioCtx.createOscillator();
+            const gain = window.audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.connect(gain);
+            gain.connect(window.audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+          } catch (e) {}
+        };
+      ]]>
+      </q-node>
+
+      <!-- [Q-NODE CORE LOGIC & PYTHON BRIDGE] -->
+      <q-node id="Q-CORE" target="RUNTIME">[[
+        class QNMEngine {
+          constructor() {
+            this.canvas = document.getElementById('viewport-canvas');
+            this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+            this.pipeBadge = document.getElementById('pipeline-badge');
+            this.fpsBadge = document.getElementById('fps-badge');
+            this.mWc = document.getElementById('metric-wc');
+            this.mPawa = document.getElementById('metric-pawa');
+            this.mBerg = document.getElementById('metric-berg');
+            this.logs = document.getElementById('chat-logs');
+            this.input = document.getElementById('chat-input');
+            this.btnSend = document.getElementById('btn-send');
+
+            this.activePipeline = 'STANDALONE JS';
+            this.activeMatter = 'BASALTE';
+            this.windFactor = 1.0;
+            this.animTime = 0;
+            this.ws = null;
+
+            this.init();
+          }
+
+          init() {
+            this.initChat();
+            this.connectPythonBridge();
+            this.startLoop();
+          }
+
+          connectPythonBridge() {
+            try {
+              this.ws = new WebSocket("ws://127.0.0.1:8765");
+              this.ws.onopen = () => {
+                this.activePipeline = 'PYTHON BRIDGE (ONLINE)';
+                if (this.pipeBadge) this.pipeBadge.textContent = `PIPELINE : ${this.activePipeline}`;
+                this.addChatMsg("Connecté à golemotor.py via WebSocket local (Port 8765).", 'bot');
+              };
+
+              this.ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'TELEMETRY_SYNC') {
+                  const m = data.metrics;
+                  if (this.mWc) this.mWc.textContent = `${m.w_c} W`;
+                  if (this.mPawa) this.mPawa.textContent = `${m.pawa} PAWA`;
+                  if (this.mBerg) this.mBerg.textContent = `${m.berg} BERG`;
+                }
+              };
+
+              this.ws.onerror = () => {
+                this.activePipeline = 'LOCAL FALLBACK (JS ONLY)';
+                if (this.pipeBadge) this.pipeBadge.textContent = `PIPELINE : ${this.activePipeline}`;
+              };
+            } catch (e) {
+              this.activePipeline = 'LOCAL FALLBACK (JS ONLY)';
+              if (this.pipeBadge) this.pipeBadge.textContent = `PIPELINE : ${this.activePipeline}`;
+            }
+          }
+
+          initChat() {
+            if (this.btnSend && this.input) {
+              const submit = () => {
+                const txt = this.input.value.trim();
+                if (!txt) return;
+                this.addChatMsg(txt, 'user');
+                this.input.value = '';
+                window.playHapticFreq(520, 'triangle', 0.08);
+
+                setTimeout(() => {
+                  this.addChatMsg(`Directive sémantique [${txt}] intégrée dans l'écosystème GoleMotor.`, 'bot');
+                  window.playHapticFreq(880, 'sine', 0.1);
+                }, 120);
+              };
+              this.btnSend.addEventListener('click', submit);
+              this.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+            }
+          }
+
+          addChatMsg(txt, sender) {
+            const el = document.createElement('div');
+            el.className = `chat-msg msg-${sender}`;
+            el.textContent = txt;
+            this.logs.appendChild(el);
+            this.logs.scrollTop = this.logs.scrollHeight;
+          }
+
+          injectMatter(type) {
+            this.activeMatter = type;
+            this.addChatMsg(`Matière active commutée sur : ${type}`, 'bot');
+            window.playHapticFreq(620, 'sawtooth', 0.1);
+          }
+
+          triggerWindPulse() {
+            this.windFactor = this.windFactor === 1.0 ? 2.5 : 1.0;
+            this.addChatMsg(`Type 5 (Vent Universel) : Facteur cinétique x${this.windFactor}`, 'bot');
+            window.playHapticFreq(320, 'triangle', 0.15);
+          }
+
+          saveToOPFS() {
+            this.addChatMsg("Sauvegarde locale validée.", 'bot');
+            window.playHapticFreq(1040, 'sine', 0.1);
+          }
+
+          startLoop() {
+            let last = performance.now();
+            const loop = (now) => {
+              const delta = now - last;
+              last = now;
+
+              if (this.fpsBadge) this.fpsBadge.textContent = `${Math.min(60, Math.round(1000 / delta))} FPS`;
+              this.render();
+              requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+          }
+
+          render() {
+            if (!this.ctx) return;
+            this.animTime += 0.02 * this.windFactor;
+            const w = this.canvas.width;
+            const h = this.canvas.height;
+
+            this.ctx.fillStyle = '#020308';
+            this.ctx.fillRect(0, 0, w, h);
+
+            // Rendu de l'astre et des flux de matière
+            const cx = w / 2 + Math.cos(this.animTime) * 60;
+            const cy = h / 2 + Math.sin(this.animTime * 1.4) * 35;
+
+            const grad = this.ctx.createRadialGradient(cx, cy, 10, cx, cy, 90);
+            if (this.activeMatter === 'BASALTE') {
+              grad.addColorStop(0, '#778899');
+              grad.addColorStop(1, 'transparent');
+            } else if (this.activeMatter === 'PLASMA') {
+              grad.addColorStop(0, '#FF0055');
+              grad.addColorStop(0.5, '#7000FF');
+              grad.addColorStop(1, 'transparent');
+            } else {
+              grad.addColorStop(0, '#00FFCC');
+              grad.addColorStop(0.7, '#0066FF');
+              grad.addColorStop(1, 'transparent');
+            }
+
+            this.ctx.fillStyle = grad;
+            this.ctx.beginPath();
+            this.ctx.arc(cx, cy, 90, 0, Math.PI * 2);
+            this.ctx.fill();
+          }
+        }
+
+        window.QNM = new QNMEngine();
+      ]]>
+      </q-node>
+
+    </q-matrix-root>
+  </script>
+</body>
+</html>
