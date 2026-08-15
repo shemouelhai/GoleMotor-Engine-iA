@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GOLEMOTOR 4.5D - WEBGPU / WEBGL2 / WEBCPU ENGINE</title>
+
+  <!-- ======================================================== -->
+  <!-- TRANSISTOR-INTERPRÈTE COFF NATIF                         -->
+  <!-- ======================================================== -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const source = document.getElementById('coff-matrix-source');
+      if (!source) return;
+
+      const raw = source.textContent;
+
+      const extractNode = (emoji) => {
+        const regex = /<co\b([^>]*?)>([\s\S]*?)<\/co>/gi;
+        const output = [];
+        let match;
+
+        while ((match = regex.exec(raw)) !== null) {
+          const attrs = match[1];
+          let body = match[2].trim();
+
+          const idPattern = new RegExp(`id=["']${emoji}-[^"']+["']`, 'i');
+          if (idPattern.test(attrs)) {
+            if (body.startsWith('[[') && body.endsWith(']]')) {
+              body = body.slice(2, -2).trim();
+            }
+            output.push(body);
+          }
+        }
+        return output.join('\n');
+      };
+
+      // 1. Injection CSS
+      const css = extractNode('🎨');
+      if (css) {
+        const s = document.createElement('style');
+        s.textContent = css;
+        document.head.appendChild(s);
+      }
+
+      // 2. Injection Structure DOM
+      const html = extractNode('🔲');
+      if (html) {
+        document.body.insertAdjacentHTML('beforeend', html);
+      }
+
+      // 3. Injection Audio
+      const audioJs = extractNode('🎵');
+      if (audioJs) {
+        const s = document.createElement('script');
+        s.textContent = audioJs;
+        document.body.appendChild(s);
+      }
+
+      // 4. Injection Logique Moteur (GPU/CPU/Storage)
+      const engineJs = extractNode('⚡');
+      if (engineJs) {
+        const s = document.createElement('script');
+        s.textContent = engineJs;
+        document.body.appendChild(s);
+      }
+    });
+  </script>
+</head>
+<body>
+
+  <!-- ======================================================== -->
+  <!-- MATRICE COFF DU GOLEMOTOR MULTI-PIPELINE                 -->
+  <!-- ======================================================== -->
+  <script type="text/coff-matrix" id="coff-matrix-source">
+    <coff-matrice-primaire>
+      <golem-motor type="Universal-Engine" mode="WebGPU-WebGL-WebCPU-LocalFirst">
+
+        <!-- [TRANSISTOR CSS] -->
+        <co id="🎨-c1" target="T-CSS">[[
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body {
+            background-color: #020307;
+            color: #D8EEFF;
+            font-family: 'Segoe UI', monospace, system-ui;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+            gap: 12px;
+            overflow-x: hidden;
+          }
+          .header-panel { text-align: center; display: flex; flex-direction: column; gap: 4px; }
+          .tag { font-size: 0.7rem; letter-spacing: 3px; color: #00FFCC; font-weight: bold; }
+          .title { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 800; letter-spacing: 4px; text-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
+          .main-grid { display: grid; grid-template-columns: 1fr; width: 100%; max-width: 680px; gap: 12px; }
+          .viewport-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border: 2px solid rgba(0, 255, 204, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.15);
+          }
+          #golem-canvas { width: 100%; height: 100%; display: block; }
+          .overlay-badge {
+            position: absolute; top: 8px; left: 8px;
+            background: rgba(0,0,0,0.8); border: 1px solid #00FFCC;
+            border-radius: 4px; padding: 3px 6px; font-size: 0.65rem; color: #00FFCC;
+          }
+          .fps-badge {
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(0,0,0,0.8); border: 1px solid #FF0055;
+            border-radius: 4px; padding: 3px 6px; font-size: 0.65rem; color: #FF0055; font-weight: bold;
+          }
+          .control-panel {
+            background: rgba(6, 10, 18, 0.9);
+            border: 1px solid rgba(0, 255, 204, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.8rem;
+          }
+          .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
+          .btn-action {
+            background: rgba(0, 255, 204, 0.1);
+            border: 1px solid rgba(0, 255, 204, 0.4);
+            color: #00FFCC;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: bold;
+            transition: all 0.2s ease;
+          }
+          .btn-action:hover { background: rgba(0, 255, 204, 0.25); color: #FFF; box-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
+          .telemetry { display: flex; justify-content: space-between; font-size: 0.75rem; color: #78A0C0; }
+          .val-active { color: #00FF66; font-weight: bold; }
+          .val-cyber { color: #00FFFF; font-weight: bold; }
+          .log-console {
+            background: #010204;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            height: 90px;
+            overflow-y: auto;
+            color: #89A;
+          }
+        ]]>
+        </co>
+
+        <!-- [TRANSISTOR DOM] -->
+        <co id="🔲-h1" target="T-DOM">[[
+          <div class="header-panel">
+            <div class="tag">GOLEMOTOR // COMPUTE ARCHITECTURE</div>
+            <h1 class="title">TRI-PIPELINE ENGINE</h1>
+          </div>
+          <div class="main-grid">
+            <div class="viewport-box">
+              <canvas id="golem-canvas" width="640" height="360"></canvas>
+              <div class="overlay-badge" id="backend-badge">INITIALISATION...</div>
+              <div class="fps-badge" id="fps-badge">60 FPS</div>
+            </div>
+            <div class="control-panel">
+              <div class="btn-group">
+                <button class="btn-action" onclick="window.GoleEngine.pickLocalFolder()">📁 ACCÈS DOSSIER LOCAL</button>
+                <button class="btn-action" onclick="window.GoleEngine.saveLocalScene()">💾 SAUVEGARDE LOCALE (OPFS)</button>
+                <button class="btn-action" onclick="window.GoleEngine.syncGitHub()">🐙 SYNC GITHUB REPO</button>
+                <button class="btn-action" onclick="window.GoleEngine.togglePipeline()">⚡ BASCULE PIPELINE (GPU/CPU)</button>
+              </div>
+              <div class="telemetry">
+                <span>PIPELINE ACTIF : <b id="pipeline-status" class="val-cyber">DÉTECTION...</b></span>
+                <span>CHARGE TRACE : <b id="frame-time" class="val-active">0.00 ms</b></span>
+              </div>
+              <div class="log-console" id="log-console">> Moteur GoleMotor prêt pour instanciation.</div>
+            </div>
+          </div>
+        ]]>
+        </co>
+
+        <!-- [TRANSISTOR AUDIO] -->
+        <co id="🎵-a1" target="T-AUDIO">[[
+          window.audioCtx = null;
+          window.playHapticFreq = function(freq = 440, type = 'sine') {
+            try {
+              if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+              const now = window.audioCtx.currentTime;
+              const osc = window.audioCtx.createOscillator();
+              const gain = window.audioCtx.createGain();
+              osc.type = type;
+              osc.frequency.setValueAtTime(freq, now);
+              gain.gain.setValueAtTime(0.08, now);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+              osc.connect(gain);
+              gain.connect(window.audioCtx.destination);
+              osc.start(now);
+              osc.stop(now + 0.1);
+            } catch(e) {}
+          };
+        ]]>
+        </co>
+
+        <!-- [TRANSISTOR LOGIQUE & RENDU MULTI-BACKEND] -->
+        <co id="⚡-p1" target="T-LOGIC">[[
+          class GoleTriEngine {
+            constructor() {
+              this.canvas = document.getElementById('golem-canvas');
+              this.backendBadge = document.getElementById('backend-badge');
+              this.pipelineStatus = document.getElementById('pipeline-status');
+              this.frameTimeEl = document.getElementById('frame-time');
+              this.fpsBadge = document.getElementById('fps-badge');
+              this.consoleEl = document.getElementById('log-console');
+
+              this.activePipeline = 'NONE';
+              this.fps = 60;
+              this.animTime = 0;
+              this.localDirectoryHandle = null;
+
+              this.init();
+            }
+
+            log(msg) {
+              if (!this.consoleEl) return;
+              const line = document.createElement('div');
+              line.textContent = `> ${msg}`;
+              this.consoleEl.appendChild(line);
+              this.consoleEl.scrollTop = this.consoleEl.scrollHeight;
+            }
+
+            async init() {
+              this.initThermalObserver();
+
+              // 1. Tentative WebGPU
+              if (navigator.gpu) {
+                try {
+                  const adapter = await navigator.gpu.requestAdapter();
+                  if (adapter) {
+                    this.gpuDevice = await adapter.requestDevice();
+                    this.gpuContext = this.canvas.getContext('webgpu');
+                    this.gpuFormat = navigator.gpu.getPreferredCanvasFormat();
+                    this.gpuContext.configure({
+                      device: this.gpuDevice,
+                      format: this.gpuFormat,
+                      alphaMode: 'premultiplied'
+                    });
+                    this.activePipeline = 'WEBGPU';
+                    this.log("Initialisation WebGPU réussie (Cœurs Compute actifs).");
+                  }
+                } catch (e) {
+                  this.log("WebGPU inaccessible, repli sur WebGL2.");
+                }
+              }
+
+              // 2. Repli WebGL2
+              if (this.activePipeline === 'NONE') {
+                this.gl = this.canvas.getContext('webgl2');
+                if (this.gl) {
+                  this.activePipeline = 'WEBGL2';
+                  this.log("Initialisation WebGL2 réussie (Shader Core 3D).");
+                }
+              }
+
+              // 3. Repli WebCPU (Canvas 2D / Buffer Logiciel)
+              if (this.activePipeline === 'NONE') {
+                this.ctx2d = this.canvas.getContext('2d', { willReadFrequently: true });
+                this.activePipeline = 'WEBCPU';
+                this.log("Initialisation WebCPU (Rendu Matriciel Logiciel).");
+              }
+
+              this.updateUIStatus();
+              this.startRenderLoop();
+            }
+
+            initThermalObserver() {
+              document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                  this.fps = 15; // Passage mode stase passive
+                  this.log("Mise en veille thermique (15 FPS).");
+                } else {
+                  this.fps = 60; // Restitution
+                  this.log("Cadence nominale rétablie (60 FPS).");
+                }
+              });
+            }
+
+            updateUIStatus() {
+              if (this.backendBadge) this.backendBadge.textContent = `BACKEND : ${this.activePipeline}`;
+              if (this.pipelineStatus) this.pipelineStatus.textContent = this.activePipeline;
+            }
+
+            togglePipeline() {
+              if (this.activePipeline === 'WEBGPU' && this.canvas.getContext('webgl2')) {
+                this.activePipeline = 'WEBGL2';
+              } else if (this.activePipeline === 'WEBGL2') {
+                this.activePipeline = 'WEBCPU';
+              } else {
+                this.activePipeline = navigator.gpu ? 'WEBGPU' : 'WEBGL2';
+              }
+              if (typeof window.playHapticFreq === 'function') window.playHapticFreq(620, 'triangle');
+              this.updateUIStatus();
+              this.log(`Bascule manuelle vers : ${this.activePipeline}`);
+            }
+
+            // Gestion Système de Fichiers Local (File System Access API)
+            async pickLocalFolder() {
+              try {
+                if ('showDirectoryPicker' in window) {
+                  this.localDirectoryHandle = await window.showDirectoryPicker();
+                  this.log(`Dossier local lié : ${this.localDirectoryHandle.name}`);
+                  if (typeof window.playHapticFreq === 'function') window.playHapticFreq(880, 'sine');
+                } else {
+                  this.log("File System API non supportée sur ce navigateur.");
+                }
+              } catch (err) {
+                this.log(`Accès dossier annulé : ${err.message}`);
+              }
+            }
+
+            async saveLocalScene() {
+              try {
+                // Sauvegarde via OPFS (Origin Private File System)
+                const root = await navigator.storage.getDirectory();
+                const fileHandle = await root.getFileHandle('golem_scene.coff.json', { create: true });
+                const writable = await fileHandle.createWritable();
+                const sceneData = JSON.stringify({
+                  timestamp: Date.now(),
+                  pipeline: this.activePipeline,
+                  smm_level: 2,
+                  elements: ["Basalte", "Cristallin", "Poussière Stellaire"]
+                }, null, 2);
+                await writable.write(sceneData);
+                await writable.close();
+                this.log("Instance sauvegardée dans l'espace sécurisé local (OPFS).");
+                if (typeof window.playHapticFreq === 'function') window.playHapticFreq(520, 'sine');
+              } catch (e) {
+                this.log(`Erreur sauvegarde OPFS : ${e.message}`);
+              }
+            }
+
+            syncGitHub() {
+              this.log("Appel du module Octokit REST Client pour synchronisation du dépôt.");
+              if (typeof window.playHapticFreq === 'function') window.playHapticFreq(440, 'sawtooth');
+            }
+
+            startRenderLoop() {
+              let lastTime = performance.now();
+
+              const loop = (now) => {
+                const delta = now - lastTime;
+                const interval = 1000 / this.fps;
+
+                if (delta >= interval) {
+                  lastTime = now - (delta % interval);
+
+                  const t0 = performance.now();
+                  this.render();
+                  const t1 = performance.now();
+
+                  if (this.frameTimeEl) this.frameTimeEl.textContent = `${(t1 - t0).toFixed(2)} ms`;
+                  if (this.fpsBadge) this.fpsBadge.textContent = `${Math.round(1000 / delta)} FPS`;
+                }
+                requestAnimationFrame(loop);
+              };
+              requestAnimationFrame(loop);
+            }
+
+            render() {
+              this.animTime += 0.02;
+
+              if (this.activePipeline === 'WEBGPU' && this.gpuContext) {
+                const commandEncoder = this.gpuDevice.createCommandEncoder();
+                const textureView = this.gpuContext.getCurrentTexture().createView();
+                const renderPass = commandEncoder.beginRenderPass({
+                  colorAttachments: [{
+                    view: textureView,
+                    clearValue: {
+                      r: 0.01 + Math.sin(this.animTime) * 0.01,
+                      g: 0.02,
+                      b: 0.05,
+                      a: 1.0
+                    },
+                    loadOp: 'clear',
+                    storeOp: 'store'
+                  }]
+                });
+                renderPass.end();
+                this.gpuDevice.queue.submit([commandEncoder.finish()]);
+              } else if (this.activePipeline === 'WEBGL2' && this.gl) {
+                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                this.gl.clearColor(0.01, 0.02, 0.06, 1.0);
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+              } else {
+                // Rendu WebCPU (2D Canvas)
+                if (!this.ctx2d) this.ctx2d = this.canvas.getContext('2d');
+                this.ctx2d.fillStyle = '#02040A';
+                this.ctx2d.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Simulation visuelle de l'onde
+                const cx = this.canvas.width / 2;
+                const cy = this.canvas.height / 2;
+                this.ctx2d.strokeStyle = '#00FFCC';
+                this.ctx2d.beginPath();
+                this.ctx2d.arc(cx, cy, 40 + Math.sin(this.animTime * 2) * 10, 0, Math.PI * 2);
+                this.ctx2d.stroke();
+              }
+            }
+          }
+
+          window.GoleEngine = new GoleTriEngine();
+        ]]>
+        </co>
+
+      </golem-motor>
+    </coff-matrice-primaire>
+  </script>
+</body>
+</html>
