@@ -3,65 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GOLEMOTOR 4.5D - WEBGPU / WEBGL2 / WEBCPU ENGINE</title>
+  <meta name="theme-color" content="#020308">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>SUPER S.A.M. - GOLEMOTOR QNM SOVEREIGN PWA</title>
+
+  <!-- MANIFEST DATA-URI INTÉGRÉ POUR INSTALLATION PWA IMMÉDIATE -->
+  <link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22GoleMotor%20QNM%22%2C%22short_name%22%3A%22GoleMotor%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23020308%22%2C%22theme_color%22%3A%22%2300FFCC%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20512%20512%27%3E%3Crect%20width%3D%27512%27%20height%3D%27512%27%20fill%3D%27%23020308%27%2F%3E%3Ccircle%20cx%3D%27256%27%20cy%3D%27256%27%20r%3D%27200%27%20fill%3D%27none%27%20stroke%3D%27%2300FFCC%27%20stroke-width%3D%2730%27%2F%3E%3Cpath%20d%3D%27M180%20150L360%20256L180%20362Z%27%20fill%3D%27%237000FF%27%2F%3E%3C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
 
   <!-- ======================================================== -->
-  <!-- TRANSISTOR-INTERPRÈTE COFF NATIF                         -->
+  <!-- TRANSISTOR-INTERPRÈTE QUANTUM NODE MATRIX (QNM)          -->
   <!-- ======================================================== -->
   <script>
+    // Enregistrement du Service Worker Offline en Data-URI
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        const CACHE_NAME = 'golemotor-qnm-v1';
+        self.addEventListener('install', (e) => {
+          self.skipWaiting();
+        });
+        self.addEventListener('activate', (e) => {
+          e.waitUntil(clients.claim());
+        });
+        self.addEventListener('fetch', (e) => {
+          e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'text/javascript' });
+      navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(console.warn);
+    }
+
+    // Interpréteur QNM Haute Fréquence
     document.addEventListener("DOMContentLoaded", () => {
-      const source = document.getElementById('coff-matrix-source');
+      const source = document.getElementById('qnm-source-matrix');
       if (!source) return;
 
       const raw = source.textContent;
 
-      const extractNode = (emoji) => {
-        const regex = /<co\b([^>]*?)>([\s\S]*?)<\/co>/gi;
-        const output = [];
-        let match;
-
-        while ((match = regex.exec(raw)) !== null) {
-          const attrs = match[1];
-          let body = match[2].trim();
-
-          const idPattern = new RegExp(`id=["']${emoji}-[^"']+["']`, 'i');
-          if (idPattern.test(attrs)) {
-            if (body.startsWith('[[') && body.endsWith(']]')) {
-              body = body.slice(2, -2).trim();
-            }
-            output.push(body);
-          }
+      const extractQNode = (tagId) => {
+        const regex = new RegExp(`<q-node\\b[^>]*?id=["']${tagId}["'][^>]*?>([\\s\\S]*?)<\\/q-node>`, 'gi');
+        const match = regex.exec(raw);
+        if (!match) return '';
+        let body = match[1].trim();
+        if (body.startsWith('[[') && body.endsWith(']]')) {
+          body = body.slice(2, -2).trim();
         }
-        return output.join('\n');
+        return body;
       };
 
-      // 1. Injection CSS
-      const css = extractNode('🎨');
+      // 1. Injection du Style Vectoriel
+      const css = extractQNode('Q-CSS');
       if (css) {
         const s = document.createElement('style');
         s.textContent = css;
         document.head.appendChild(s);
       }
 
-      // 2. Injection Structure DOM
-      const html = extractNode('🔲');
+      // 2. Injection du DOM Réactif
+      const html = extractQNode('Q-DOM');
       if (html) {
         document.body.insertAdjacentHTML('beforeend', html);
       }
 
-      // 3. Injection Audio
-      const audioJs = extractNode('🎵');
+      // 3. Injection du Synthétiseur Haptique WebAudio
+      const audioJs = extractQNode('Q-AUDIO');
       if (audioJs) {
         const s = document.createElement('script');
         s.textContent = audioJs;
         document.body.appendChild(s);
       }
 
-      // 4. Injection Logique Moteur (GPU/CPU/Storage)
-      const engineJs = extractNode('⚡');
-      if (engineJs) {
+      // 4. Injection du Noyau Graphique Tri-Pipeline & Sémantique
+      const logicJs = extractQNode('Q-CORE');
+      if (logicJs) {
         const s = document.createElement('script');
-        s.textContent = engineJs;
+        s.textContent = logicJs;
         document.body.appendChild(s);
       }
     });
@@ -70,357 +86,373 @@
 <body>
 
   <!-- ======================================================== -->
-  <!-- MATRICE COFF DU GOLEMOTOR MULTI-PIPELINE                 -->
+  <!-- SOURCE DE LA MATRICE QNM NATIVE                          -->
   <!-- ======================================================== -->
-  <script type="text/coff-matrix" id="coff-matrix-source">
-    <coff-matrice-primaire>
-      <golem-motor type="Universal-Engine" mode="WebGPU-WebGL-WebCPU-LocalFirst">
+  <script type="text/qnm-matrix" id="qnm-source-matrix">
+    <q-matrix-root type="SovereignEngine" version="2.0.26">
 
-        <!-- [TRANSISTOR CSS] -->
-        <co id="🎨-c1" target="T-CSS">[[
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          body {
-            background-color: #020307;
-            color: #D8EEFF;
-            font-family: 'Segoe UI', monospace, system-ui;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 16px;
-            gap: 12px;
-            overflow-x: hidden;
-          }
-          .header-panel { text-align: center; display: flex; flex-direction: column; gap: 4px; }
-          .tag { font-size: 0.7rem; letter-spacing: 3px; color: #00FFCC; font-weight: bold; }
-          .title { font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 800; letter-spacing: 4px; text-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
-          .main-grid { display: grid; grid-template-columns: 1fr; width: 100%; max-width: 680px; gap: 12px; }
-          .viewport-box {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border: 2px solid rgba(0, 255, 204, 0.3);
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.15);
-          }
-          #golem-canvas { width: 100%; height: 100%; display: block; }
-          .overlay-badge {
-            position: absolute; top: 8px; left: 8px;
-            background: rgba(0,0,0,0.8); border: 1px solid #00FFCC;
-            border-radius: 4px; padding: 3px 6px; font-size: 0.65rem; color: #00FFCC;
-          }
-          .fps-badge {
-            position: absolute; top: 8px; right: 8px;
-            background: rgba(0,0,0,0.8); border: 1px solid #FF0055;
-            border-radius: 4px; padding: 3px 6px; font-size: 0.65rem; color: #FF0055; font-weight: bold;
-          }
-          .control-panel {
-            background: rgba(6, 10, 18, 0.9);
-            border: 1px solid rgba(0, 255, 204, 0.2);
-            border-radius: 8px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-size: 0.8rem;
-          }
-          .btn-group { display: flex; flex-wrap: wrap; gap: 6px; }
-          .btn-action {
-            background: rgba(0, 255, 204, 0.1);
-            border: 1px solid rgba(0, 255, 204, 0.4);
-            color: #00FFCC;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.75rem;
-            font-weight: bold;
-            transition: all 0.2s ease;
-          }
-          .btn-action:hover { background: rgba(0, 255, 204, 0.25); color: #FFF; box-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
-          .telemetry { display: flex; justify-content: space-between; font-size: 0.75rem; color: #78A0C0; }
-          .val-active { color: #00FF66; font-weight: bold; }
-          .val-cyber { color: #00FFFF; font-weight: bold; }
-          .log-console {
-            background: #010204;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 6px;
-            padding: 8px;
-            font-family: monospace;
-            font-size: 0.7rem;
-            height: 90px;
-            overflow-y: auto;
-            color: #89A;
-          }
-        ]]>
-        </co>
+      <!-- [Q-NODE CSS] -->
+      <q-node id="Q-CSS" target="STYLE">[[
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+          background-color: #020308;
+          color: #DDF0FF;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-height: 100vh;
+          padding: 10px;
+          gap: 10px;
+          overflow-x: hidden;
+          user-select: none;
+        }
+        .header { text-align: center; display: flex; flex-direction: column; gap: 2px; }
+        .tag { font-size: 0.65rem; letter-spacing: 3px; color: #00FFCC; font-weight: bold; }
+        .title { font-size: 1.4rem; font-weight: 900; letter-spacing: 4px; text-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
+        .workspace { display: flex; flex-direction: column; width: 100%; max-width: 640px; gap: 10px; }
+        .viewport-box {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          background: #000;
+          border: 2px solid rgba(0, 255, 204, 0.3);
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+        }
+        #viewport-canvas { width: 100%; height: 100%; display: block; }
+        .badge-left {
+          position: absolute; top: 6px; left: 6px;
+          background: rgba(0,0,0,0.8); border: 1px solid #00FFCC;
+          border-radius: 4px; padding: 2px 6px; font-size: 0.6rem; color: #00FFCC;
+        }
+        .badge-right {
+          position: absolute; top: 6px; right: 6px;
+          background: rgba(0,0,0,0.8); border: 1px solid #FF0055;
+          border-radius: 4px; padding: 2px 6px; font-size: 0.6rem; color: #FF0055; font-weight: bold;
+        }
+        .metrics-grid {
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+          background: rgba(8, 14, 26, 0.85); border: 1px solid rgba(0, 255, 204, 0.2);
+          border-radius: 6px; padding: 8px; font-size: 0.7rem;
+        }
+        .metric-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .metric-val { font-weight: bold; color: #00FFCC; }
+        .controls { display: flex; flex-wrap: wrap; gap: 6px; }
+        .btn-qnm {
+          flex: 1 1 45%; background: rgba(0, 255, 204, 0.08); border: 1px solid rgba(0, 255, 204, 0.3);
+          color: #00FFCC; padding: 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold;
+          cursor: pointer; text-align: center; transition: all 0.2s ease;
+        }
+        .btn-qnm:active { background: rgba(0, 255, 204, 0.3); transform: scale(0.98); }
+        .chat-section {
+          background: rgba(6, 10, 20, 0.9); border: 1px solid rgba(112, 0, 255, 0.3);
+          border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; height: 180px;
+        }
+        .chat-logs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; font-size: 0.7rem; }
+        .chat-msg { padding: 4px 8px; border-radius: 4px; max-width: 90%; }
+        .msg-user { align-self: flex-end; background: rgba(0, 255, 204, 0.15); color: #FFF; }
+        .msg-bot { align-self: flex-start; background: rgba(112, 0, 255, 0.2); color: #DDF0FF; border: 1px solid rgba(112, 0, 255, 0.4); }
+        .chat-form { display: flex; gap: 6px; }
+        .chat-input {
+          flex: 1; background: #000; border: 1px solid rgba(0, 255, 204, 0.3);
+          border-radius: 4px; padding: 6px; color: #FFF; font-size: 0.75rem;
+        }
+        .btn-send {
+          background: #7000FF; color: #FFF; border: none; border-radius: 4px;
+          padding: 6px 12px; font-weight: bold; cursor: pointer; font-size: 0.75rem;
+        }
+      ]]>
+      </q-node>
 
-        <!-- [TRANSISTOR DOM] -->
-        <co id="🔲-h1" target="T-DOM">[[
-          <div class="header-panel">
-            <div class="tag">GOLEMOTOR // COMPUTE ARCHITECTURE</div>
-            <h1 class="title">TRI-PIPELINE ENGINE</h1>
+      <!-- [Q-NODE DOM] -->
+      <q-node id="Q-DOM" target="LAYOUT">[[
+        <div class="header">
+          <div class="tag">GOLEMOTOR // QUANTUM NODE MATRIX</div>
+          <h1 class="title">QNM SOVEREIGN CORE</h1>
+        </div>
+        <div class="workspace">
+          <div class="viewport-box">
+            <canvas id="viewport-canvas" width="640" height="360"></canvas>
+            <div class="badge-left" id="pipeline-badge">PIPELINE : DÉTECTION...</div>
+            <div class="badge-right" id="fps-badge">60 FPS</div>
           </div>
-          <div class="main-grid">
-            <div class="viewport-box">
-              <canvas id="golem-canvas" width="640" height="360"></canvas>
-              <div class="overlay-badge" id="backend-badge">INITIALISATION...</div>
-              <div class="fps-badge" id="fps-badge">60 FPS</div>
+          <div class="metrics-grid">
+            <div class="metric-cell"><span>TRINITÉ W_c</span><span id="metric-wc" class="metric-val">0.0 W</span></div>
+            <div class="metric-cell"><span>PAWA BANK</span><span id="metric-pawa" class="metric-val">0.0 PAWA</span></div>
+            <div class="metric-cell"><span>BERG 1%</span><span id="metric-berg" class="metric-val">0.000 BERG</span></div>
+          </div>
+          <div class="controls">
+            <button class="btn-qnm" onclick="window.QNM.injectMatter('BASALTE')">💎 INJECTER BASALTE</button>
+            <button class="btn-qnm" onclick="window.QNM.injectMatter('PLASMA')">⚡ INJECTER PLASMA</button>
+            <button class="btn-qnm" onclick="window.QNM.triggerWindPulse()">💨 PULSE VENT (TYPE 5)</button>
+            <button class="btn-qnm" onclick="window.QNM.saveToOPFS()">💾 SAUVEGARDE LOCALE OPFS</button>
+          </div>
+          <div class="chat-section">
+            <div class="chat-logs" id="chat-logs">
+              <div class="chat-msg msg-bot">Noyau QNM autonome initialisé en mode Local-First. Zéro API distante requise.</div>
             </div>
-            <div class="control-panel">
-              <div class="btn-group">
-                <button class="btn-action" onclick="window.GoleEngine.pickLocalFolder()">📁 ACCÈS DOSSIER LOCAL</button>
-                <button class="btn-action" onclick="window.GoleEngine.saveLocalScene()">💾 SAUVEGARDE LOCALE (OPFS)</button>
-                <button class="btn-action" onclick="window.GoleEngine.syncGitHub()">🐙 SYNC GITHUB REPO</button>
-                <button class="btn-action" onclick="window.GoleEngine.togglePipeline()">⚡ BASCULE PIPELINE (GPU/CPU)</button>
-              </div>
-              <div class="telemetry">
-                <span>PIPELINE ACTIF : <b id="pipeline-status" class="val-cyber">DÉTECTION...</b></span>
-                <span>CHARGE TRACE : <b id="frame-time" class="val-active">0.00 ms</b></span>
-              </div>
-              <div class="log-console" id="log-console">> Moteur GoleMotor prêt pour instanciation.</div>
+            <div class="chat-form">
+              <input type="text" class="chat-input" id="chat-input" placeholder="Directive sémantique ou échange..." />
+              <button class="btn-send" id="btn-send">PULSE</button>
             </div>
           </div>
-        ]]>
-        </co>
+        </div>
+      ]]>
+      </q-node>
 
-        <!-- [TRANSISTOR AUDIO] -->
-        <co id="🎵-a1" target="T-AUDIO">[[
-          window.audioCtx = null;
-          window.playHapticFreq = function(freq = 440, type = 'sine') {
-            try {
-              if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-              if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
-              const now = window.audioCtx.currentTime;
-              const osc = window.audioCtx.createOscillator();
-              const gain = window.audioCtx.createGain();
-              osc.type = type;
-              osc.frequency.setValueAtTime(freq, now);
-              gain.gain.setValueAtTime(0.08, now);
-              gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-              osc.connect(gain);
-              gain.connect(window.audioCtx.destination);
-              osc.start(now);
-              osc.stop(now + 0.1);
-            } catch(e) {}
-          };
-        ]]>
-        </co>
+      <!-- [Q-NODE AUDIO] -->
+      <q-node id="Q-AUDIO" target="SOUND">[[
+        window.audioCtx = null;
+        window.playHapticFreq = function(freq = 440, type = 'sine', duration = 0.1) {
+          try {
+            if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (window.audioCtx.state === 'suspended') window.audioCtx.resume();
+            const now = window.audioCtx.currentTime;
+            const osc = window.audioCtx.createOscillator();
+            const gain = window.audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            osc.connect(gain);
+            gain.connect(window.audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + duration);
+          } catch (e) {}
+        };
+      ]]>
+      </q-node>
 
-        <!-- [TRANSISTOR LOGIQUE & RENDU MULTI-BACKEND] -->
-        <co id="⚡-p1" target="T-LOGIC">[[
-          class GoleTriEngine {
-            constructor() {
-              this.canvas = document.getElementById('golem-canvas');
-              this.backendBadge = document.getElementById('backend-badge');
-              this.pipelineStatus = document.getElementById('pipeline-status');
-              this.frameTimeEl = document.getElementById('frame-time');
-              this.fpsBadge = document.getElementById('fps-badge');
-              this.consoleEl = document.getElementById('log-console');
+      <!-- [Q-NODE CORE LOGIC] -->
+      <q-node id="Q-CORE" target="RUNTIME">[[
+        class QNMEngine {
+          constructor() {
+            this.canvas = document.getElementById('viewport-canvas');
+            this.pipeBadge = document.getElementById('pipeline-badge');
+            this.fpsBadge = document.getElementById('fps-badge');
+            this.mWc = document.getElementById('metric-wc');
+            this.mPawa = document.getElementById('metric-pawa');
+            this.mBerg = document.getElementById('metric-berg');
+            this.logs = document.getElementById('chat-logs');
+            this.input = document.getElementById('chat-input');
+            this.btnSend = document.getElementById('btn-send');
 
-              this.activePipeline = 'NONE';
-              this.fps = 60;
-              this.animTime = 0;
-              this.localDirectoryHandle = null;
+            this.activePipeline = 'WEBCPU';
+            this.fps = 60;
+            this.animTime = 0;
+            this.pawaBank = 0;
+            this.bergBank = 0;
+            this.activeMatter = 'CRISTALLIN';
+            this.windFactor = 1.0;
 
-              this.init();
-            }
+            this.init();
+          }
 
-            log(msg) {
-              if (!this.consoleEl) return;
-              const line = document.createElement('div');
-              line.textContent = `> ${msg}`;
-              this.consoleEl.appendChild(line);
-              this.consoleEl.scrollTop = this.consoleEl.scrollHeight;
-            }
+          async init() {
+            this.initThermalState();
+            this.initChatListener();
 
-            async init() {
-              this.initThermalObserver();
-
-              // 1. Tentative WebGPU
-              if (navigator.gpu) {
-                try {
-                  const adapter = await navigator.gpu.requestAdapter();
-                  if (adapter) {
-                    this.gpuDevice = await adapter.requestDevice();
-                    this.gpuContext = this.canvas.getContext('webgpu');
-                    this.gpuFormat = navigator.gpu.getPreferredCanvasFormat();
-                    this.gpuContext.configure({
-                      device: this.gpuDevice,
-                      format: this.gpuFormat,
-                      alphaMode: 'premultiplied'
-                    });
-                    this.activePipeline = 'WEBGPU';
-                    this.log("Initialisation WebGPU réussie (Cœurs Compute actifs).");
-                  }
-                } catch (e) {
-                  this.log("WebGPU inaccessible, repli sur WebGL2.");
+            // 1. Initialisation WebGPU
+            if (navigator.gpu) {
+              try {
+                const adapter = await navigator.gpu.requestAdapter();
+                if (adapter) {
+                  this.device = await adapter.requestDevice();
+                  this.gpuCtx = this.canvas.getContext('webgpu');
+                  this.gpuFormat = navigator.gpu.getPreferredCanvasFormat();
+                  this.gpuCtx.configure({ device: this.device, format: this.gpuFormat, alphaMode: 'premultiplied' });
+                  this.activePipeline = 'WEBGPU (WGSL)';
                 }
-              }
-
-              // 2. Repli WebGL2
-              if (this.activePipeline === 'NONE') {
-                this.gl = this.canvas.getContext('webgl2');
-                if (this.gl) {
-                  this.activePipeline = 'WEBGL2';
-                  this.log("Initialisation WebGL2 réussie (Shader Core 3D).");
-                }
-              }
-
-              // 3. Repli WebCPU (Canvas 2D / Buffer Logiciel)
-              if (this.activePipeline === 'NONE') {
-                this.ctx2d = this.canvas.getContext('2d', { willReadFrequently: true });
-                this.activePipeline = 'WEBCPU';
-                this.log("Initialisation WebCPU (Rendu Matriciel Logiciel).");
-              }
-
-              this.updateUIStatus();
-              this.startRenderLoop();
+              } catch (e) {}
             }
 
-            initThermalObserver() {
-              document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                  this.fps = 15; // Passage mode stase passive
-                  this.log("Mise en veille thermique (15 FPS).");
-                } else {
-                  this.fps = 60; // Restitution
-                  this.log("Cadence nominale rétablie (60 FPS).");
-                }
-              });
+            // 2. Fallback WebGL2
+            if (this.activePipeline === 'WEBCPU') {
+              this.gl = this.canvas.getContext('webgl2');
+              if (this.gl) this.activePipeline = 'WEBGL2 (GLSL)';
             }
 
-            updateUIStatus() {
-              if (this.backendBadge) this.backendBadge.textContent = `BACKEND : ${this.activePipeline}`;
-              if (this.pipelineStatus) this.pipelineStatus.textContent = this.activePipeline;
+            // 3. Fallback Canvas 2D
+            if (this.activePipeline === 'WEBCPU') {
+              this.ctx2d = this.canvas.getContext('2d');
             }
 
-            togglePipeline() {
-              if (this.activePipeline === 'WEBGPU' && this.canvas.getContext('webgl2')) {
-                this.activePipeline = 'WEBGL2';
-              } else if (this.activePipeline === 'WEBGL2') {
-                this.activePipeline = 'WEBCPU';
+            if (this.pipeBadge) this.pipeBadge.textContent = `PIPELINE : ${this.activePipeline}`;
+            this.startLoop();
+          }
+
+          initThermalState() {
+            document.addEventListener('visibilitychange', () => {
+              if (document.hidden) {
+                this.fps = 15; // Passage en mode passif
               } else {
-                this.activePipeline = navigator.gpu ? 'WEBGPU' : 'WEBGL2';
+                this.fps = 60; // Restitution active
               }
-              if (typeof window.playHapticFreq === 'function') window.playHapticFreq(620, 'triangle');
-              this.updateUIStatus();
-              this.log(`Bascule manuelle vers : ${this.activePipeline}`);
-            }
+            });
+          }
 
-            // Gestion Système de Fichiers Local (File System Access API)
-            async pickLocalFolder() {
-              try {
-                if ('showDirectoryPicker' in window) {
-                  this.localDirectoryHandle = await window.showDirectoryPicker();
-                  this.log(`Dossier local lié : ${this.localDirectoryHandle.name}`);
-                  if (typeof window.playHapticFreq === 'function') window.playHapticFreq(880, 'sine');
-                } else {
-                  this.log("File System API non supportée sur ce navigateur.");
-                }
-              } catch (err) {
-                this.log(`Accès dossier annulé : ${err.message}`);
-              }
-            }
+          initChatListener() {
+            if (this.btnSend && this.input) {
+              const submit = () => {
+                const text = this.input.value.trim();
+                if (!text) return;
+                this.addChatMsg(text, 'user');
+                this.input.value = '';
+                if (typeof window.playHapticFreq === 'function') window.playHapticFreq(520, 'triangle', 0.08);
 
-            async saveLocalScene() {
-              try {
-                // Sauvegarde via OPFS (Origin Private File System)
-                const root = await navigator.storage.getDirectory();
-                const fileHandle = await root.getFileHandle('golem_scene.coff.json', { create: true });
-                const writable = await fileHandle.createWritable();
-                const sceneData = JSON.stringify({
-                  timestamp: Date.now(),
-                  pipeline: this.activePipeline,
-                  smm_level: 2,
-                  elements: ["Basalte", "Cristallin", "Poussière Stellaire"]
-                }, null, 2);
-                await writable.write(sceneData);
-                await writable.close();
-                this.log("Instance sauvegardée dans l'espace sécurisé local (OPFS).");
-                if (typeof window.playHapticFreq === 'function') window.playHapticFreq(520, 'sine');
-              } catch (e) {
-                this.log(`Erreur sauvegarde OPFS : ${e.message}`);
-              }
-            }
-
-            syncGitHub() {
-              this.log("Appel du module Octokit REST Client pour synchronisation du dépôt.");
-              if (typeof window.playHapticFreq === 'function') window.playHapticFreq(440, 'sawtooth');
-            }
-
-            startRenderLoop() {
-              let lastTime = performance.now();
-
-              const loop = (now) => {
-                const delta = now - lastTime;
-                const interval = 1000 / this.fps;
-
-                if (delta >= interval) {
-                  lastTime = now - (delta % interval);
-
-                  const t0 = performance.now();
-                  this.render();
-                  const t1 = performance.now();
-
-                  if (this.frameTimeEl) this.frameTimeEl.textContent = `${(t1 - t0).toFixed(2)} ms`;
-                  if (this.fpsBadge) this.fpsBadge.textContent = `${Math.round(1000 / delta)} FPS`;
-                }
-                requestAnimationFrame(loop);
+                // Traitement sémantique heuristique local
+                setTimeout(() => {
+                  const reply = this.processLocalHeuristics(text);
+                  this.addChatMsg(reply, 'bot');
+                  if (typeof window.playHapticFreq === 'function') window.playHapticFreq(880, 'sine', 0.1);
+                }, 150);
               };
-              requestAnimationFrame(loop);
-            }
 
-            render() {
-              this.animTime += 0.02;
-
-              if (this.activePipeline === 'WEBGPU' && this.gpuContext) {
-                const commandEncoder = this.gpuDevice.createCommandEncoder();
-                const textureView = this.gpuContext.getCurrentTexture().createView();
-                const renderPass = commandEncoder.beginRenderPass({
-                  colorAttachments: [{
-                    view: textureView,
-                    clearValue: {
-                      r: 0.01 + Math.sin(this.animTime) * 0.01,
-                      g: 0.02,
-                      b: 0.05,
-                      a: 1.0
-                    },
-                    loadOp: 'clear',
-                    storeOp: 'store'
-                  }]
-                });
-                renderPass.end();
-                this.gpuDevice.queue.submit([commandEncoder.finish()]);
-              } else if (this.activePipeline === 'WEBGL2' && this.gl) {
-                this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-                this.gl.clearColor(0.01, 0.02, 0.06, 1.0);
-                this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-              } else {
-                // Rendu WebCPU (2D Canvas)
-                if (!this.ctx2d) this.ctx2d = this.canvas.getContext('2d');
-                this.ctx2d.fillStyle = '#02040A';
-                this.ctx2d.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-                // Simulation visuelle de l'onde
-                const cx = this.canvas.width / 2;
-                const cy = this.canvas.height / 2;
-                this.ctx2d.strokeStyle = '#00FFCC';
-                this.ctx2d.beginPath();
-                this.ctx2d.arc(cx, cy, 40 + Math.sin(this.animTime * 2) * 10, 0, Math.PI * 2);
-                this.ctx2d.stroke();
-              }
+              this.btnSend.addEventListener('click', submit);
+              this.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
             }
           }
 
-          window.GoleEngine = new GoleTriEngine();
-        ]]>
-        </co>
+          addChatMsg(text, sender) {
+            const el = document.createElement('div');
+            el.className = `chat-msg msg-${sender}`;
+            el.textContent = text;
+            this.logs.appendChild(el);
+            this.logs.scrollTop = this.logs.scrollHeight;
+          }
 
-      </golem-motor>
-    </coff-matrice-primaire>
+          processLocalHeuristics(query) {
+            const q = query.toLowerCase();
+            if (q.includes('status') || q.includes('état')) {
+              return `Système QNM stable | Pipeline : ${this.activePipeline} | Matière active : ${this.activeMatter} | Vent : x${this.windFactor.toFixed(1)}.`;
+            }
+            if (q.includes('pawa') || q.includes('berg')) {
+              return `Mining d'entropie actif. PAWA accumulé : ${this.pawaBank.toFixed(1)} | BERG cristallisé : ${this.bergBank.toFixed(4)}.`;
+            }
+            if (q.includes('matiere') || q.includes('matière')) {
+              return `Matières fondamentales prêtes : Basalte, Caoutchouc, Cristallin, Plasma Quantique, Matière Éthérée.`;
+            }
+            return `Instruction sémantique [${query}] intégrée dans les registres QNM locaux.`;
+          }
+
+          injectMatter(type) {
+            this.activeMatter = type;
+            this.addChatMsg(`Matière injectée : ${type} (SMM Configuré).`, 'bot');
+            if (typeof window.playHapticFreq === 'function') window.playHapticFreq(620, 'sawtooth', 0.1);
+          }
+
+          triggerWindPulse() {
+            this.windFactor = this.windFactor === 1.0 ? 2.5 : 1.0;
+            this.addChatMsg(`Type 5 (Le Vent) activé : Facteur cinétique x${this.windFactor}.`, 'bot');
+            if (typeof window.playHapticFreq === 'function') window.playHapticFreq(320, 'triangle', 0.15);
+          }
+
+          async saveToOPFS() {
+            try {
+              const root = await navigator.storage.getDirectory();
+              const handle = await root.getFileHandle('qnm_scene_instance.json', { create: true });
+              const writable = await handle.createWritable();
+              const payload = JSON.stringify({
+                timestamp: Date.now(),
+                pipeline: this.activePipeline,
+                matter: this.activeMatter,
+                pawa: this.pawaBank,
+                berg: this.bergBank
+              }, null, 2);
+              await writable.write(payload);
+              await writable.close();
+              this.addChatMsg("Instance de scène enregistrée en local (OPFS).", 'bot');
+              if (typeof window.playHapticFreq === 'function') window.playHapticFreq(1040, 'sine', 0.1);
+            } catch (e) {
+              this.addChatMsg(`Erreur OPFS : ${e.message}`, 'bot');
+            }
+          }
+
+          startLoop() {
+            let lastTime = performance.now();
+            const loop = (now) => {
+              const delta = now - lastTime;
+              const interval = 1000 / this.fps;
+
+              if (delta >= interval) {
+                lastTime = now - (delta % interval);
+                this.render();
+
+                // Recyclage d'entropie thermodynamique (1% BERG / 99% PAWA)
+                const driftMs = Math.abs(delta - 16.67);
+                const generatedPawa = (driftMs * 0.05 * 1024) * 0.001 * this.windFactor;
+                this.pawaBank += generatedPawa * 0.99;
+                this.bergBank += (generatedPawa * 0.01) / 1000;
+
+                if (this.fpsBadge) this.fpsBadge.textContent = `${Math.round(1000 / delta)} FPS`;
+                if (this.mWc) this.mWc.textContent = `${(this.pawaBank * 1.5).toFixed(1)} W`;
+                if (this.mPawa) this.mPawa.textContent = `${this.pawaBank.toFixed(1)} PAWA`;
+                if (this.mBerg) this.mBerg.textContent = `${this.bergBank.toFixed(4)} BERG`;
+              }
+              requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+          }
+
+          render() {
+            this.animTime += 0.02 * this.windFactor;
+            const w = this.canvas.width;
+            const h = this.canvas.height;
+
+            if (this.activePipeline.startsWith('WEBGPU') && this.gpuCtx) {
+              const enc = this.device.createCommandEncoder();
+              const pass = enc.beginRenderPass({
+                colorAttachments: [{
+                  view: this.gpuCtx.getCurrentTexture().createView(),
+                  clearValue: { r: 0.01 + Math.sin(this.animTime) * 0.02, g: 0.02, b: 0.06, a: 1.0 },
+                  loadOp: 'clear', storeOp: 'store'
+                }]
+              });
+              pass.end();
+              this.device.queue.submit([enc.finish()]);
+            } else if (this.activePipeline.startsWith('WEBGL2') && this.gl) {
+              this.gl.viewport(0, 0, w, h);
+              this.gl.clearColor(0.01 + Math.sin(this.animTime) * 0.02, 0.02, 0.06, 1.0);
+              this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+            } else {
+              if (!this.ctx2d) return;
+              this.ctx2d.fillStyle = '#020308';
+              this.ctx2d.fillRect(0, 0, w, h);
+
+              // Rendu volumétrique procédural
+              const cx = w / 2 + Math.cos(this.animTime) * 50;
+              const cy = h / 2 + Math.sin(this.animTime * 1.3) * 30;
+
+              const grad = this.ctx2d.createRadialGradient(cx, cy, 10, cx, cy, 100);
+              if (this.activeMatter === 'BASALTE') {
+                grad.addColorStop(0, '#556677');
+                grad.addColorStop(1, 'transparent');
+              } else if (this.activeMatter === 'PLASMA') {
+                grad.addColorStop(0, '#FF0055');
+                grad.addColorStop(0.5, '#7000FF');
+                grad.addColorStop(1, 'transparent');
+              } else {
+                grad.addColorStop(0, '#00FFCC');
+                grad.addColorStop(0.6, '#0066FF');
+                grad.addColorStop(1, 'transparent');
+              }
+
+              this.ctx2d.fillStyle = grad;
+              this.ctx2d.beginPath();
+              this.ctx2d.arc(cx, cy, 100, 0, Math.PI * 2);
+              this.ctx2d.fill();
+            }
+          }
+        }
+
+        window.QNM = new QNMEngine();
+      ]]>
+      </q-node>
+
+    </q-matrix-root>
   </script>
 </body>
 </html>
+
